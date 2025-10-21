@@ -6,9 +6,11 @@ import { extname, join } from 'path';
 import { Document } from './document.entity';
 import { DocumentsController } from './documents.controller';
 import { DocumentsService } from './documents.service';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [
+    AuthModule,
     TypeOrmModule.forFeature([Document]),
     MulterModule.register({
       storage: diskStorage({

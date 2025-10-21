@@ -22,6 +22,7 @@ export default function Admin() {
   const [file, setFile] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
   const [uploading, setUploading] = useState(false)
+  const [deleteModal, setDeleteModal] = useState<{ id: string; title: string } | null>(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -61,11 +62,7 @@ export default function Admin() {
     const uploadToast = toast.loading('Enviando documento...')
 
     try {
-      await api.post('/documents', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
+      await api.post('/documents', formData)
 
       setTitle('')
       setDescription('')
@@ -83,13 +80,22 @@ export default function Admin() {
     }
   }
 
-  const handleDelete = async (id: string, title: string) => {
-    if (!confirm(`Deseja realmente excluir "${title}"?`)) return
+  const openDeleteModal = (id: string, title: string) => {
+    setDeleteModal({ id, title })
+  }
+
+  const closeDeleteModal = () => {
+    setDeleteModal(null)
+  }
+
+  const confirmDelete = async () => {
+    if (!deleteModal) return
 
     const deleteToast = toast.loading('Removendo documento...')
+    closeDeleteModal()
 
     try {
-      await api.delete(`/documents/${id}`)
+      await api.delete(`/documents/${deleteModal.id}`)
       loadDocuments()
       toast.success('Documento removido com sucesso!', { id: deleteToast })
     } catch (error: any) {
@@ -209,7 +215,7 @@ export default function Admin() {
                       <p className="text-sm text-gray-600">{doc.filename}</p>
                     </div>
                     <button
-                      onClick={() => handleDelete(doc.id, doc.title)}
+                      onClick={() => openDeleteModal(doc.id, doc.title)}
                       className="ml-4 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-sm rounded transition-colors"
                     >
                       Remover
@@ -223,6 +229,33 @@ export default function Admin() {
       </main>
 
       <Footer />
+
+      {deleteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 animate-fade-in">
+            <h3 className="text-xl font-bold text-gray-800 mb-4">
+              Confirmar Exclusão
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Deseja realmente excluir <span className="font-semibold">"{deleteModal.title}"</span>?
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={closeDeleteModal}
+                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg transition-colors font-medium"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors font-medium"
+              >
+                Excluir
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
