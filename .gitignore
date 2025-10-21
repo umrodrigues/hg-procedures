@@ -1,0 +1,10 @@
+node_modules
+.turbo
+dist
+.next
+.env
+uploads/*.pdf
+uploads/**/*.pdf
+*.log
+pnpm-lock.yaml
+

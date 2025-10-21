@@ -1,0 +1,224 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import Header from '@/components/Header'
+import Footer from '@/components/Footer'
+import { api } from '@/lib/api'
+
+interface Document {
+  id: string
+  title: string
+  description: string
+  filename: string
+  createdAt: string
+}
+
+export default function Admin() {
+  const [documents, setDocuments] = useState<Document[]>([])
+  const [title, setTitle] = useState('')
+  const [description, setDescription] = useState('')
+  const [file, setFile] = useState<File | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const router = useRouter()
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      router.push('/login')
+      return
+    }
+    loadDocuments()
+  }, [])
+
+  const loadDocuments = async () => {
+    setLoading(true)
+    try {
+      const response = await api.get('/documents')
+      setDocuments(response.data)
+    } catch (error) {
+      console.error('Erro ao carregar documentos:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleUpload = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!file || !title) return
+
+    setUploading(true)
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('title', title)
+    formData.append('description', description)
+
+    try {
+      const token = localStorage.getItem('token')
+      await api.post('/documents', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      setTitle('')
+      setDescription('')
+      setFile(null)
+      loadDocuments()
+      alert('Documento adicionado com sucesso!')
+    } catch (error) {
+      console.error('Erro ao fazer upload:', error)
+      alert('Erro ao adicionar documento')
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Deseja realmente excluir este documento?')) return
+
+    try {
+      const token = localStorage.getItem('token')
+      await api.delete(`/documents/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      loadDocuments()
+      alert('Documento removido com sucesso!')
+    } catch (error) {
+      console.error('Erro ao deletar documento:', error)
+      alert('Erro ao remover documento')
+    }
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+    router.push('/login')
+  }
+
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Header />
+
+      <main className="flex-grow container mx-auto px-4 py-8">
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">
+              Painel Administrativo
+            </h1>
+            <p className="text-gray-600">Gerenciar documentos</p>
+          </div>
+          <div className="flex gap-4">
+            <button
+              onClick={() => router.push('/')}
+              className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors"
+            >
+              Ver Site
+            </button>
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
+            >
+              Sair
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-xl font-bold text-gray-800 mb-4">
+              Adicionar Novo Documento
+            </h2>
+
+            <form onSubmit={handleUpload} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Título
+                </label>
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Descrição
+                </label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  rows={3}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Arquivo PDF
+                </label>
+                <input
+                  type="file"
+                  accept=".pdf"
+                  onChange={(e) => setFile(e.target.files?.[0] || null)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  required
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={uploading}
+                className="w-full bg-primary hover:bg-secondary text-white font-semibold py-3 px-4 rounded-lg transition-colors disabled:opacity-50"
+              >
+                {uploading ? 'Enviando...' : 'Adicionar Documento'}
+              </button>
+            </form>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-xl font-bold text-gray-800 mb-4">
+              Documentos Cadastrados
+            </h2>
+
+            {loading ? (
+              <div className="text-center py-8">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+              </div>
+            ) : (
+              <div className="space-y-3 max-h-[600px] overflow-y-auto">
+                {documents.map((doc) => (
+                  <div
+                    key={doc.id}
+                    className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50"
+                  >
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-gray-800">{doc.title}</h3>
+                      <p className="text-sm text-gray-600">{doc.filename}</p>
+                    </div>
+                    <button
+                      onClick={() => handleDelete(doc.id)}
+                      className="ml-4 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-sm rounded transition-colors"
+                    >
+                      Remover
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </main>
+
+      <Footer />
+    </div>
+  )
+}
+
