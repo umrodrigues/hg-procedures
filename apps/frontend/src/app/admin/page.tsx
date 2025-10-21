@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { api } from '@/lib/api'
+import toast from 'react-hot-toast'
 
 interface Document {
   id: string
@@ -46,7 +47,10 @@ export default function Admin() {
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!file || !title) return
+    if (!file || !title) {
+      toast.error('Preencha todos os campos obrigatórios')
+      return
+    }
 
     setUploading(true)
     const formData = new FormData()
@@ -54,49 +58,50 @@ export default function Admin() {
     formData.append('title', title)
     formData.append('description', description)
 
+    const uploadToast = toast.loading('Enviando documento...')
+
     try {
-      const token = localStorage.getItem('token')
       await api.post('/documents', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${token}`,
         },
       })
 
       setTitle('')
       setDescription('')
       setFile(null)
+      const form = e.target as HTMLFormElement
+      form.reset()
+      
       loadDocuments()
-      alert('Documento adicionado com sucesso!')
-    } catch (error) {
+      toast.success('Documento adicionado com sucesso!', { id: uploadToast })
+    } catch (error: any) {
       console.error('Erro ao fazer upload:', error)
-      alert('Erro ao adicionar documento')
+      toast.error(error.response?.data?.message || 'Erro ao adicionar documento', { id: uploadToast })
     } finally {
       setUploading(false)
     }
   }
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Deseja realmente excluir este documento?')) return
+  const handleDelete = async (id: string, title: string) => {
+    if (!confirm(`Deseja realmente excluir "${title}"?`)) return
+
+    const deleteToast = toast.loading('Removendo documento...')
 
     try {
-      const token = localStorage.getItem('token')
-      await api.delete(`/documents/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      await api.delete(`/documents/${id}`)
       loadDocuments()
-      alert('Documento removido com sucesso!')
-    } catch (error) {
+      toast.success('Documento removido com sucesso!', { id: deleteToast })
+    } catch (error: any) {
       console.error('Erro ao deletar documento:', error)
-      alert('Erro ao remover documento')
+      toast.error(error.response?.data?.message || 'Erro ao remover documento', { id: deleteToast })
     }
   }
 
   const handleLogout = () => {
     localStorage.removeItem('token')
     localStorage.removeItem('user')
+    document.cookie = 'token=; path=/; max-age=0'
     router.push('/login')
   }
 
@@ -204,7 +209,7 @@ export default function Admin() {
                       <p className="text-sm text-gray-600">{doc.filename}</p>
                     </div>
                     <button
-                      onClick={() => handleDelete(doc.id)}
+                      onClick={() => handleDelete(doc.id, doc.title)}
                       className="ml-4 px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-sm rounded transition-colors"
                     >
                       Remover

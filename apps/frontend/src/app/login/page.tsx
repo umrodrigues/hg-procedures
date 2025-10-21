@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { api } from '@/lib/api'
+import toast from 'react-hot-toast'
 
 export default function Login() {
   const [username, setUsername] = useState('')
@@ -16,13 +17,22 @@ export default function Login() {
     setError('')
     setLoading(true)
 
+    const loginToast = toast.loading('Autenticando...')
+
     try {
       const response = await api.post('/auth/login', { username, password })
       localStorage.setItem('token', response.data.access_token)
       localStorage.setItem('user', JSON.stringify(response.data.user))
-      router.push('/admin')
+      document.cookie = `token=${response.data.access_token}; path=/; max-age=86400`
+      
+      toast.success('Login realizado com sucesso!', { id: loginToast })
+      
+      setTimeout(() => {
+        router.push('/admin')
+      }, 500)
     } catch (err: any) {
       setError('Credenciais inválidas')
+      toast.error('Usuário ou senha incorretos', { id: loginToast })
     } finally {
       setLoading(false)
     }

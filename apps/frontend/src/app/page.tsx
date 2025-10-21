@@ -55,24 +55,25 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-blue-50 to-gray-100">
       <Header />
       
-      <main className="flex-grow container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
+      <main className="flex-grow container mx-auto px-4 py-12">
+        <div className="mb-12 text-center">
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent mb-4">
             Procedimentos Hospitalares
           </h1>
-          <p className="text-gray-600">
-            Documentação e protocolos médicos
+          <p className="text-xl text-gray-600">
+            Documentação e protocolos médicos de excelência
           </p>
         </div>
 
         <SearchFilter onSearch={handleSearch} />
 
         {loading ? (
-          <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          <div className="text-center py-20">
+            <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-blue-600 border-t-transparent"></div>
+            <p className="mt-4 text-gray-600">Carregando documentos...</p>
           </div>
         ) : (
           <DocumentGrid documents={filteredDocuments} />
