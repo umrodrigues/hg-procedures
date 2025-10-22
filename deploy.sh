@@ -1,20 +1,55 @@
 #!/bin/bash
 
+# Verificar se está rodando como root
+if [ "$EUID" -ne 0 ]; then
+  echo "❌ Este script precisa ser executado como root!"
+  echo "💡 Execute: sudo ./deploy.sh"
+  exit 1
+fi
+
 echo "🚀 Iniciando deploy do sistema Hospital Procedures..."
 echo ""
 
 # Verificar se Docker está instalado
 if ! command -v docker &> /dev/null; then
   echo "❌ Docker não está instalado!"
-  echo "📦 Instale o Docker: https://docs.docker.com/get-docker/"
-  exit 1
+  echo "📦 Instalando Docker..."
+  
+  # Atualizar sistema
+  apt-get update
+  
+  # Instalar dependências
+  apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
+  
+  # Adicionar chave GPG do Docker
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+  
+  # Adicionar repositório do Docker
+  echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+  
+  # Atualizar e instalar Docker
+  apt-get update
+  apt-get install -y docker-ce docker-ce-cli containerd.io
+  
+  # Iniciar e habilitar Docker
+  systemctl start docker
+  systemctl enable docker
+  
+  echo "✅ Docker instalado com sucesso!"
+  echo ""
 fi
 
 # Verificar se Docker Compose está instalado
 if ! command -v docker-compose &> /dev/null; then
   echo "❌ Docker Compose não está instalado!"
-  echo "📦 Instale o Docker Compose: https://docs.docker.com/compose/install/"
-  exit 1
+  echo "📦 Instalando Docker Compose..."
+  
+  # Instalar Docker Compose
+  curl -L "https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+  chmod +x /usr/local/bin/docker-compose
+  
+  echo "✅ Docker Compose instalado com sucesso!"
+  echo ""
 fi
 
 # Criar arquivo .env se não existir
