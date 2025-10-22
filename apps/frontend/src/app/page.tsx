@@ -55,12 +55,12 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 via-slate-50 to-blue-100">
       <Header />
       
       <main className="flex-grow container mx-auto px-4 py-12">
         <div className="mb-12 text-center">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-pink-600 via-purple-600 to-blue-600 bg-clip-text text-transparent mb-4">
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 bg-clip-text text-transparent mb-4">
             Procedimentos Obstetrícia
           </h1>
           <p className="text-xl text-gray-600">
