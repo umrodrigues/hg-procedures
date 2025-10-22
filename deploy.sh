@@ -93,6 +93,18 @@ docker-compose down 2>/dev/null || true
 echo "✅ Containers parados!"
 echo ""
 
+# Limpar volumes e dados do banco
+echo "🗑️ Limpando dados do banco de dados..."
+docker volume rm hg-procedures_postgres_data 2>/dev/null || true
+echo "✅ Dados do banco limpos!"
+echo ""
+
+# Limpar arquivos de upload
+echo "🗑️ Limpando arquivos de upload..."
+rm -rf uploads/pdfs/* 2>/dev/null || true
+echo "✅ Arquivos de upload limpos!"
+echo ""
+
 # Limpar imagens antigas (opcional)
 echo "🧹 Limpando imagens antigas..."
 docker system prune -f 2>/dev/null || true
