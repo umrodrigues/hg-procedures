@@ -34,7 +34,7 @@ export default function SearchFilter({ onSearch }: SearchFilterProps) {
             onChange={(e) => handleChange(e.target.value)}
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
-            className="w-full px-6 py-4 pl-14 text-lg border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 shadow-sm hover:shadow-md"
+            className="w-full px-6 py-4 pl-14 text-lg border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all duration-300 shadow-sm hover:shadow-md"
           />
           <svg
             className="absolute left-5 top-5 w-6 h-6 text-gray-400"

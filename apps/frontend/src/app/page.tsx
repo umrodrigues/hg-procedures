@@ -55,16 +55,16 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-blue-50 to-gray-100">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
       <Header />
       
       <main className="flex-grow container mx-auto px-4 py-12">
         <div className="mb-12 text-center">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent mb-4">
-            Procedimentos Hospitalares
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-pink-600 via-purple-600 to-blue-600 bg-clip-text text-transparent mb-4">
+            Procedimentos Obstetrícia
           </h1>
           <p className="text-xl text-gray-600">
-            Documentação e protocolos médicos de excelência
+            Documentação especializada em cuidados obstétricos e ginecológicos
           </p>
         </div>
 

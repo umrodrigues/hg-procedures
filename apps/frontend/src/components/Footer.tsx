@@ -4,10 +4,18 @@ export default function Footer() {
       <div className="container mx-auto px-4 py-6">
         <div className="flex flex-col md:flex-row items-center justify-between">
           <p className="text-gray-400 text-sm">
-            &copy; {new Date().getFullYear()} Hospital - Sistema de Procedimentos
+            &copy; {new Date().getFullYear()} Hospital Geral - Procedimentos Obstetrícia
           </p>
           <p className="text-gray-500 text-xs mt-2 md:mt-0">
-            Desenvolvido com ❤️
+            Desenvolvido por{' '}
+            <a 
+              href="https://www.lunaristech.com.br/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-blue-400 hover:text-blue-300 transition-colors"
+            >
+              Lunaris Tech
+            </a>
           </p>
         </div>
       </div>

@@ -6,8 +6,11 @@ import { Toaster } from 'react-hot-toast'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Hospital - Procedimentos',
-  description: 'Sistema de documentação de procedimentos hospitalares',
+  title: 'Hospital Geral - Procedimentos Obstetrícia',
+  description: 'Sistema de documentação de procedimentos obstétricos e ginecológicos',
+  icons: {
+    icon: '/favicon.svg',
+  },
 }
 
 export default function RootLayout({

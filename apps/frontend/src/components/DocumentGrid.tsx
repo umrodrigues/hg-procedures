@@ -71,7 +71,7 @@ export default function DocumentGrid({ documents }: DocumentGridProps) {
           onClick={() => router.push(`/document/${doc.id}`)}
           className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all cursor-pointer overflow-hidden group"
         >
-          <div className="bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 h-40 flex items-center justify-center relative overflow-hidden">
+          <div className="bg-gradient-to-br from-pink-500 via-purple-600 to-blue-600 h-40 flex items-center justify-center relative overflow-hidden">
             <motion.div
               whileHover={{ scale: 1.2, rotate: 5 }}
               transition={{ duration: 0.3 }}
@@ -92,7 +92,7 @@ export default function DocumentGrid({ documents }: DocumentGridProps) {
           </div>
           
           <div className="p-5">
-            <h3 className="font-bold text-gray-800 mb-2 line-clamp-2 text-lg group-hover:text-blue-600 transition-colors">
+            <h3 className="font-bold text-gray-800 mb-2 line-clamp-2 text-lg group-hover:text-purple-600 transition-colors">
               {doc.title}
             </h3>
             {doc.description && (
